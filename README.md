@@ -1,8 +1,9 @@
 # Omni-Captioner: Data Pipeline, Models, and Benchmark for Omni Detailed Perception
-[**📖 arXiv**](https://arxiv.org/abs/2510.12720) | [**🤗 HuggingFace Demo**](https://huggingface.co/spaces/Qwen/Qwen3-Omni-Captioner-Demo) | [**🤖 ModelScope Demo**](https://modelscope.cn/studios/Qwen/Qwen3-Omni-Captioner-Demo) | [**🔧 Qwen3-Omni-Captioner**](https://github.com/QwenLM/Qwen3-Omni/blob/main/cookbooks/omni_captioner.ipynb) | [**🕵️ Omni-Detective Pipeline**](Omni-Detective/main.py) | [**🧑‍🏫 Omni-Cloze Benchmark**]()
+[**📖 arXiv**](https://arxiv.org/abs/2510.12720) | [**🤗 HuggingFace Demo**](https://huggingface.co/spaces/Qwen/Qwen3-Omni-Captioner-Demo) | [**🤖 ModelScope Demo**](https://modelscope.cn/studios/Qwen/Qwen3-Omni-Captioner-Demo) | [**🔧 Qwen3-Omni-Captioner**](https://github.com/QwenLM/Qwen3-Omni/blob/main/cookbooks/omni_captioner.ipynb) | [**🕵️ Omni-Detective Pipeline**](Omni-Detective/main.py) | [**🧑‍🏫 Omni-Cloze Benchmark**](https://huggingface.co/datasets/BoJack/Omni-Cloze)
 
 
 # News
+- [2026.03.18] The manually verified [**Omni-Cloze Benchmark**](https://huggingface.co/datasets/BoJack/Omni-Cloze) has been released.
 - [2025.10.17] [**A minimal, extensible implementation**](Omni-Detective/main.py) of the Omni‑Detective agentic data pipeline has been released. 
 - [2025.10.14] Omni-Captioner techinical report has been release on [**arXiv**](https://arxiv.org/abs/2510.12720). 
 - [2025.09.22] Qwen3-Omni-Captioner has been released. Check out [**HuggingFace Demo**](https://huggingface.co/spaces/Qwen/Qwen3-Omni-Captioner-Demo) and [**ModelScope Demo**](https://modelscope.cn/studios/Qwen/Qwen3-Omni-Captioner-Demo), and refer to the [**cookbook**](https://github.com/QwenLM/Qwen3-Omni/blob/main/cookbooks/omni_captioner.ipynb) for usage. 
@@ -63,16 +64,56 @@ Note: **Qwen3-Omni-30B-A3B-Captioner** is a single-turn model that accepts only 
 
 ![](assets/omni-cloze.jpg)
 
-## Quick Start (TODO)
-We will open‑source the Omni‑Cloze benchmark as soon as possible. 
+## Quick Start
+
+### 1. Prepare Video Data
+The video dataset is split into several tarball parts. Concatenate and extract them to the `videos/` directory:
+
+```bash
+cat videos.part0* > videos.tar
+tar -xf videos.tar
+```
+
+### 2. Prepare Inference Results
+The core metadata file is `omni_cloze.jsonl`, which contains 2,320 audio-visual files and their corresponding cloze questions. 
+
+To evaluate your model, you must first run inference and save the generated descriptions into a new field named **`predicted_caption`** within the JSONL file. Each line in your input file should follow this structure:
+
+```json
+{
+  "uuid": 1,
+  "video_path": "./videos/0000001.mp4",
+  "predicted_caption": "Your model's detailed description of the audio and visual content goes here...",
+  "...": [...] 
+}
+```
+
+### 3. Run Evaluation
+The evaluation process uses an LLM to map your detailed captions to the specific cloze blanks.
+
+```bash
+# 1. Set API environment variables
+export OPENAI_API_KEY="your-api-key-here"
+export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
+
+# 2. Specify input and output data paths, and the model predicted caption field name is "predicted_caption" in the input file
+input_file="your-input-file-here.jsonl"
+output_file="your-output-file-here.jsonl"
+
+# 3. Run the evaluation script
+python generate_prediction.py --input $input_file --output $output_file --workers 100
+
+# 4. Run the statistics script
+python compute_acc.py --input $output_file --show-subcategory
+```
 
 # Citation
 If you find our data pipeline, models, or the benchmark useful, please consider giving a star and a citation, thanks!
 ```
-@article{ma2025omni,
+@article{omni-captioner,
   title={Omni-Captioner: Data Pipeline, Models, and Benchmark for Omni Detailed Perception},
   author={Ma, Ziyang and Xu, Ruiyang and Xing, Zhenghao and Chu, Yunfei and Wang, Yuxuan and He, Jinzheng and Xu, Jin and Heng, Pheng-Ann and Yu, Kai and Lin, Junyang and others},
-  journal={arXiv preprint arXiv:2510.12720},
-  year={2025}
+  journal={Proc. ICLR},
+  year={2026}
 }
 ```
