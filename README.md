@@ -70,8 +70,7 @@ Note: **Qwen3-Omni-30B-A3B-Captioner** is a single-turn model that accepts only 
 The video dataset is split into several tarball parts. Concatenate and extract them to the `videos/` directory:
 
 ```bash
-cat videos.part0* > videos.tar
-tar -xf videos.tar
+for f in videos.part*.tar; do tar -xvf "$f"; done
 ```
 
 ### 2. Prepare Inference Results
