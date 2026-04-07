@@ -17,6 +17,8 @@
 - [Omni Detailed Captioning Model: Omni-Captioner](#agentic-data-generation-omni-detective)
   - [Guides](#guides)
   - [Quick Start](#quick-start)
+    - [Qwen3-Omni-Captioner (Audio Version)](#qwen3-omni-captioner-audio-version)
+    - [Qwen3.5-Omni Offline Mode (Audio–Video Version)](#qwen35-omni-offline-mode-audio–video-version)
 - [Omni Detailed Captioning Benchmark: Omni-Cloze](#omni-detailed-captioning-benchmark-omni-cloze)
   - [Guides](#guides)
   - [Quick Start](#quick-start)
@@ -60,7 +62,7 @@ Note: **Qwen3-Omni-30B-A3B-Captioner** is a single-turn model that accepts only 
 
 ### Qwen3.5-Omni Offline Mode (Audio–Video Version)
 
-### Prompt Design
+#### Prompt Design
 To make Qwen3.5-Omni produce more stable, structured, and reliable detailed captioning, we recommend using the following structured-description prompt template.
 
 <details>
@@ -215,7 +217,7 @@ Content: “<content>”
 
 </details>
 
-### Performance
+#### Performance
 | Model | Omni-Cloze |
 | --- | ---: |
 | Gemini-3.1 Pro | 57.2 |
