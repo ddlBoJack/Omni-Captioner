@@ -1,8 +1,9 @@
 # Omni-Captioner: Data Pipeline, Models, and Benchmark for Omni Detailed Perception
-[**📖 arXiv**](https://arxiv.org/abs/2510.12720) | [**🤗 HuggingFace Demo**](https://huggingface.co/spaces/Qwen/Qwen3-Omni-Captioner-Demo) | [**🤖 ModelScope Demo**](https://modelscope.cn/studios/Qwen/Qwen3-Omni-Captioner-Demo) | [**🔧 Qwen3-Omni-Captioner**](https://github.com/QwenLM/Qwen3-Omni/blob/main/cookbooks/omni_captioner.ipynb) | [**🕵️ Omni-Detective Pipeline**](Omni-Detective/main.py) | [**🧑‍🏫 Omni-Cloze Benchmark**](https://huggingface.co/datasets/BoJack/Omni-Cloze)
+[**📖 Tech Report**](https://arxiv.org/abs/2510.12720) | [**🤗 Qwen3-Omni-Captioner Live Demo**](https://huggingface.co/spaces/Qwen/Qwen3-Omni-Captioner-Demo) | [**🤗 Qwen3.5-Omni Offline Mode Live Demo**](https://huggingface.co/spaces/Qwen/Qwen3.5-Omni-Offline-Demo) | [**🕵️ Omni-Detective Pipeline**](Omni-Detective/main.py) | [**🧑‍🏫 Omni-Cloze Benchmark**](https://huggingface.co/datasets/BoJack/Omni-Cloze)
 
 
 # News
+- [2026.03.30] 🔥 Qwen3.5-Omni has been released. Check out the [**Demo Page**](https://qwen.ai/blog?id=qwen3.5-omni) for the detailed audio-visual captioning, and try [**HuggingFace Offline Demo**](https://huggingface.co/spaces/Qwen/Qwen3.5-Omni-Offline-Demo) and [**ModelScope Offline Demo**](https://modelscope.cn/studios/Qwen/Qwen3.5-Omni-Offline-Demo) for live demo. 
 - [2026.03.18] The manually verified [**Omni-Cloze Benchmark**](https://huggingface.co/datasets/BoJack/Omni-Cloze) has been released.
 - [2025.10.17] [**A minimal, extensible implementation**](Omni-Detective/main.py) of the Omni‑Detective agentic data pipeline has been released. 
 - [2025.10.14] Omni-Captioner techinical report has been release on [**arXiv**](https://arxiv.org/abs/2510.12720). 
@@ -49,12 +50,179 @@ python main.py \
 # Omni Detailed Captioning Model: Omni-Captioner
 
 ## Guides
-Leveraging the high-fidelity multimodal detailed captioning data produced by Omni-Detective, we train Audio-Captioner and Omni-Captioner with a two-stage curriculum over the audio and audio–visual modalities. We have released the audio version, Qwen3‑Omni‑Captioner, and the audio‑video version will follow.
+Leveraging the high-fidelity multimodal detailed captioning data produced by Omni-Detective, we train Audio-Captioner and Omni-Captioner with a two-stage curriculum over the audio and audio–visual modalities. We have released the audio version, Qwen3‑Omni‑Captioner, and the audio‑video version inside Qwen3.5‑Omni.
 
 ## Quick Start
+### Qwen3-Omni-Captioner (Audio Version)
 Refer to the [**cookbook**](https://github.com/QwenLM/Qwen3-Omni/blob/main/cookbooks/omni_captioner.ipynb) for usage. Check out [**HuggingFace Demo**](https://huggingface.co/spaces/Qwen/Qwen3-Omni-Captioner-Demo) and [**ModelScope Demo**](https://modelscope.cn/studios/Qwen/Qwen3-Omni-Captioner-Demo) for Live Demo. 
 
 Note: **Qwen3-Omni-30B-A3B-Captioner** is a single-turn model that accepts only one audio input per inference. It does not accept any text prompts and supports **audio input only**, with **text output only**. As Qwen3-Omni-30B-A3B-Captioner is designed for generating fine‑grained descriptions of audio, excessively long audio clips may diminish detail perception. We recommend, as a best practice, limiting audio length to no more than 30 seconds.
+
+### Qwen3.5-Omni Offline Mode (Audio–Video Version)
+
+### Prompt Design
+To make Qwen3.5-Omni produce more stable, structured, and reliable detailed captioning, we recommend using the following structured-description prompt template.
+
+<details>
+<summary><strong>Recommended Audio-Video Structured-Description Prompt</strong></summary>
+
+```text
+Provide a detailed description of the video.
+
+It should explicitly include three sections: 
+
+1. A structured chronological storyline of **every noticeable audio and visual details**
+2. A structured list of all visible text. For each text element, include start timestamp, end timestamp, the exact text content, the appearance characteristics. If no text appears, explicitly state so.
+3. A structured speech-to-text transcription, include speaker（Corresponding to the character or voice‑over in Section 1, including their accent and tone）, exact spoken content, start timestamp, end timestamp, and speaking state (prosody, emotion, and style). If no speech appears, explicitly state so.
+
+Aside from these three required sections, you are free to organize any additional content in any way you find helpful. This additional content can include global information about the entire video or localized information about specific moments. You may choose the topic of this extra content freely.
+
+Output Format:
+
+## Storyline
+
+<xx:xx.xxx> - <xx:xx.xxx>
+<an unstructured long paragraph in natural language describing what happened during this period, blending both audio and video details.>
+
+<xx:xx.xxx> - <xx:xx.xxx>
+<an unstructured long paragraph in natural language describing what happened during this period, blending both audio and video details.>
+
+<xx:xx.xxx> - <xx:xx.xxx>
+<an unstructured long paragraph in natural language describing what happened during this period, blending both audio and video details.>
+
+...
+
+## Visible Text
+
+<xx:xx.xxx> - <xx:xx.xxx>
+“<element>”: <appearance>
+“<element>”: <appearance>
+
+<xx:xx.xxx> - <xx:xx.xxx>
+“<element>”: <appearance>
+“<element>”: <appearance>
+“<element>”: <appearance>
+
+<xx:xx.xxx> - <xx:xx.xxx>
+“<element>”: <appearance>
+
+...
+
+## Speakers and Transcript
+
+Speaker profiles:
+<speaker> - <profile>
+<speaker> - <profile>
+<speaker> - <profile>
+...
+
+<xx:xx.xxx> - <xx:xx.xxx>
+Speaker: <speaker>
+State: <description>
+Content: “<content>”
+
+<xx:xx.xxx> - <xx:xx.xxx>
+Speaker: <speaker>
+State: <description>
+Content: “<content>”
+
+<xx:xx.xxx> - <xx:xx.xxx>
+Speaker: <speaker>
+State: <description>
+Content: “<content>”
+
+...
+
+## <another section>
+
+<paragraphs>
+
+## <another section>
+
+<paragraphs>
+
+...
+
+```
+
+</details>
+
+<details>
+<summary><strong>Recommended Audio Structured-Description Prompt</strong></summary>
+
+```text
+Provide a detailed description of the audio.
+
+It should explicitly include two sections: 
+
+1. A structured chronological storyline of **every noticeable audio details**
+2. A structured speech-to-text transcription, include speaker（Corresponding to the character or voice‑over in Section 1, including their accent and tone）, exact spoken content, start timestamp, end timestamp, and speaking state (prosody, emotion, and style). If no speech appears, explicitly state so.
+
+Aside from these two required components, you are free to organize any additional content in any way you find helpful. This additional content can include global information about the entire audio or localized information about specific moments. You may choose the topic of this extra content freely.
+
+Output Format:
+
+## Storyline
+
+<xx:xx.xxx> - <xx:xx.xxx>
+<an unstructured long paragraph in natural language describing what happened during this period, blending both audio details.>
+
+<xx:xx.xxx> - <xx:xx.xxx>
+<an unstructured long paragraph in natural language describing what happened during this period, blending both audio details.>
+
+<xx:xx.xxx> - <xx:xx.xxx>
+<an unstructured long paragraph in natural language describing what happened during this period, blending both audio details.>
+
+...
+
+...
+
+## Speakers and Transcript
+
+Speaker profiles:
+<speaker> - <profile>
+<speaker> - <profile>
+<speaker> - <profile>
+...
+
+<xx:xx.xxx> - <xx:xx.xxx>
+Speaker: <speaker>
+State: <description>
+Content: “<content>”
+
+<xx:xx.xxx> - <xx:xx.xxx>
+Speaker: <speaker>
+State: <description>
+Content: “<content>”
+
+<xx:xx.xxx> - <xx:xx.xxx>
+Speaker: <speaker>
+State: <description>
+Content: “<content>”
+
+...
+
+## <another section>
+
+<paragraphs>
+
+## <another section>
+
+<paragraphs>
+
+...
+```
+
+</details>
+
+### Performance
+| Model | Omni-Cloze |
+| --- | ---: |
+| Gemini-3.1 Pro | 57.2 |
+| Qwen3.5-Omni-Flash | 63.0 |
+| Qwen3.5-Omni-Plus | 64.8 |
+
+Qwen3.5-Omni demonstrates strong performance on Omni-Cloze, with the Flash achieving 63.0 and the Plus reaching 64.8. By comparison, Gemini-3.1 Pro scores 57.2, which highlights Qwen3.5-Omni’s improved ability to output fine-grained audio-visual caption that align with challenging cloze-style questions.
 
 # Omni Detailed Captioning Benchmark: Omni-Cloze
 
